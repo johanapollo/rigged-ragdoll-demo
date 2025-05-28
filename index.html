@@ -2,17 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Rigged Ragdoll Demo</title>
-  <style>body { margin: 0; overflow: hidden; }</style>
+  <title>Rigged Ragdoll</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
 </head>
 <body>
   <script type="module">
     import * as THREE from 'https://unpkg.com/three@0.160.1/build/three.module.js';
     import { GLTFLoader } from 'https://unpkg.com/three@0.160.1/examples/jsm/loaders/GLTFLoader.js';
-    import Ammo from './ammo.wasm.js';
+    import Ammo from './ammo.wasm.js'; // You must have this in the root
 
-    let scene, camera, renderer, physicsWorld;
-    let model;
+    let scene, camera, renderer, physicsWorld, model;
 
     Ammo().then(() => {
       initThree();
@@ -31,22 +33,16 @@
       document.body.appendChild(renderer.domElement);
 
       const light = new THREE.DirectionalLight(0xffffff, 1);
-      light.position.set(0, 10, 10);
+      light.position.set(5, 10, 7.5);
       scene.add(light);
-
-      window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
     }
 
     function initPhysics() {
-      const config = new Ammo.btDefaultCollisionConfiguration();
-      const dispatcher = new Ammo.btCollisionDispatcher(config);
+      const collisionConfig = new Ammo.btDefaultCollisionConfiguration();
+      const dispatcher = new Ammo.btCollisionDispatcher(collisionConfig);
       const broadphase = new Ammo.btDbvtBroadphase();
       const solver = new Ammo.btSequentialImpulseConstraintSolver();
-      physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, config);
+      physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfig);
       physicsWorld.setGravity(new Ammo.btVector3(0, -9.81, 0));
     }
 
@@ -54,16 +50,13 @@
       const loader = new GLTFLoader();
       loader.load('model.glb', (gltf) => {
         model = gltf.scene;
-        model.traverse((child) => {
-          if (child.isMesh) child.castShadow = true;
-        });
         scene.add(model);
       });
     }
 
     function animate() {
       requestAnimationFrame(animate);
-      physicsWorld.stepSimulation(1 / 60, 10);
+      if (physicsWorld) physicsWorld.stepSimulation(1 / 60, 10);
       renderer.render(scene, camera);
     }
   </script>
