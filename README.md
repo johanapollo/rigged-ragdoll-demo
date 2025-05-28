@@ -1,19 +1,9 @@
-
 # Rigged Ragdoll Demo
 
-This project demonstrates how to combine a rigged GLTF model with Ammo.js physics to simulate a ragdoll in low gravity using Three.js.
+This project demonstrates a rigged 3D model using Three.js + Ammo.js physics on GitHub Pages without external dependencies.
 
-## Setup
+## How to Use
 
-1. Place your rigged `.glb` model in the root directory and name it `model.glb`.
-2. Serve the project with a static server, e.g.:
-
-```
-npx serve .
-```
-
-## Requirements
-
-- three.js (ESM)
-- ammo.js
-- GLTFLoader
+1. Add a rigged `.glb` file in the root and name it `model.glb`
+2. Push to GitHub and enable GitHub Pages
+3. Open your GitHub Pages site and see the demo in action
