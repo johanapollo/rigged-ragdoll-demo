@@ -9,7 +9,6 @@
   <script type="module">
     import * as THREE from 'https://unpkg.com/three@0.160.1/build/three.module.js';
     import { GLTFLoader } from 'https://unpkg.com/three@0.160.1/examples/jsm/loaders/GLTFLoader.js';
-
     import Ammo from './ammo.wasm.js';
 
     let scene, camera, renderer, physicsWorld;
@@ -43,11 +42,11 @@
     }
 
     function initPhysics() {
-      const collisionConfig = new Ammo.btDefaultCollisionConfiguration();
-      const dispatcher = new Ammo.btCollisionDispatcher(collisionConfig);
+      const config = new Ammo.btDefaultCollisionConfiguration();
+      const dispatcher = new Ammo.btCollisionDispatcher(config);
       const broadphase = new Ammo.btDbvtBroadphase();
       const solver = new Ammo.btSequentialImpulseConstraintSolver();
-      physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfig);
+      physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, config);
       physicsWorld.setGravity(new Ammo.btVector3(0, -9.81, 0));
     }
 
