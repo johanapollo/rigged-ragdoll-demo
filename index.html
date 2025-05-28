@@ -1,47 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>GLTF Viewer (No Physics)</title>
+  <meta charset="UTF-8" />
+  <title>GLTF Viewer</title>
   <style>
     body { margin: 0; overflow: hidden; }
-    canvas { display: block; }
+    #dropzone {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px dashed #aaa;
+      color: #aaa;
+      font-size: 20px;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
+  <div id="dropzone">Drop a .glb or .gltf file here</div>
   <script type="module">
     import * as THREE from 'https://unpkg.com/three@0.160.1/build/three.module.js';
     import { OrbitControls } from 'https://unpkg.com/three@0.160.1/examples/jsm/controls/OrbitControls.js';
     import { GLTFLoader } from 'https://unpkg.com/three@0.160.1/examples/jsm/loaders/GLTFLoader.js';
 
-    let scene = new THREE.Scene();
-    let camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 100);
-    camera.position.set(0, 1.5, 3);
+    let camera, scene, renderer, controls;
 
-    let renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    init();
+    animate();
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 1, 0);
-    controls.update();
+    function init() {
+      const container = document.body;
 
-    const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
-    light.position.set(0, 20, 0);
-    scene.add(light);
+      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 100);
+      camera.position.set(0, 2, 5);
 
-    const loader = new GLTFLoader();
-    loader.load('model.glb', function (gltf) {
-      scene.add(gltf.scene);
-    }, undefined, function (error) {
-      console.error(error);
-    });
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x222222);
+
+      const light = new THREE.HemisphereLight(0xffffff, 0x444444);
+      light.position.set(0, 20, 0);
+      scene.add(light);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff);
+      dirLight.position.set(0, 20, 10);
+      scene.add(dirLight);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      container.appendChild(renderer.domElement);
+
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.target.set(0, 1, 0);
+      controls.update();
+
+      window.addEventListener('resize', onWindowResize);
+      setupDragDrop();
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
 
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
     }
-    animate();
+
+    function setupDragDrop() {
+      const dropzone = document.getElementById('dropzone');
+      dropzone.style.pointerEvents = 'auto';
+
+      window.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dropzone.style.borderColor = '#fff';
+        dropzone.style.color = '#fff';
+      });
+
+      window.addEventListener('dragleave', function () {
+        dropzone.style.borderColor = '#aaa';
+        dropzone.style.color = '#aaa';
+      });
+
+      window.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropzone.remove();
+
+        const file = e.dataTransfer.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+          const contents = event.target.result;
+
+          const loader = new GLTFLoader();
+          const filename = file.name.toLowerCase();
+
+          if (filename.endsWith('.glb')) {
+            loader.parse(contents, '', function (gltf) {
+              scene.add(gltf.scene);
+            }, console.error);
+          } else if (filename.endsWith('.gltf')) {
+            loader.parse(contents, '', function (gltf) {
+              scene.add(gltf.scene);
+            }, console.error);
+          } else {
+            alert('Please drop a .glb or .gltf file');
+          }
+        };
+
+        reader.readAsArrayBuffer(file);
+      });
+    }
   </script>
 </body>
 </html>
