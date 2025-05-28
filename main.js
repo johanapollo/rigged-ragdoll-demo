@@ -1,6 +1,6 @@
 import * as THREE from './three.module.min.js';
 import { GLTFLoader } from './GLTFLoader.js';
-import { OrbitControls } from './OrbitControls.js';:contentReference[oaicite:10]{index=10}
+import { OrbitControls } from './OrbitControls.js';:contentReference[oaicite:10]{index=10};
 import * as CANNON from './cannon-es.js';
 
 const scene = new THREE.Scene();
