@@ -1,1 +1,1 @@
-// placeholder: replace with real ammo.wasm.js
+// Placeholder: Replace with real ammo.wasm.js

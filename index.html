@@ -2,17 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Rigged Ragdoll</title>
-  <style>
-    body { margin: 0; overflow: hidden; }
-    canvas { display: block; }
-  </style>
+  <title>Rigged Ragdoll Demo</title>
+  <style>body { margin: 0; overflow: hidden; }</style>
 </head>
 <body>
   <script type="module">
     import * as THREE from 'https://unpkg.com/three@0.160.1/build/three.module.js';
     import { GLTFLoader } from 'https://unpkg.com/three@0.160.1/examples/jsm/loaders/GLTFLoader.js';
-    import Ammo from './ammo.wasm.js'; // You must have this in the root
+    import Ammo from './ammo.wasm.js';
 
     let scene, camera, renderer, physicsWorld, model;
 
@@ -33,16 +30,16 @@
       document.body.appendChild(renderer.domElement);
 
       const light = new THREE.DirectionalLight(0xffffff, 1);
-      light.position.set(5, 10, 7.5);
+      light.position.set(0, 10, 10);
       scene.add(light);
     }
 
     function initPhysics() {
-      const collisionConfig = new Ammo.btDefaultCollisionConfiguration();
-      const dispatcher = new Ammo.btCollisionDispatcher(collisionConfig);
+      const config = new Ammo.btDefaultCollisionConfiguration();
+      const dispatcher = new Ammo.btCollisionDispatcher(config);
       const broadphase = new Ammo.btDbvtBroadphase();
       const solver = new Ammo.btSequentialImpulseConstraintSolver();
-      physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfig);
+      physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, config);
       physicsWorld.setGravity(new Ammo.btVector3(0, -9.81, 0));
     }
 
